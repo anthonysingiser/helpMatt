@@ -9,6 +9,7 @@ const loadPlayAudio = async function () {
   const audioBuffer = await soundCtx.decodeAudioData(arrayBuffer);
   source = soundCtx.createBufferSource();
   source.buffer = audioBuffer;
+  source.connect(compressor);
   source.start();
 };
 
@@ -17,22 +18,19 @@ const stopAudio = function () {
 };
 //---------------------------COMPRESSOR VALUES--------------
 let compressor = soundCtx.createDynamicsCompressor();
-compressor.threshold.setValueAtTime(-10, soundCtx.currentTime); // dB
+compressor.threshold.setValueAtTime(-25, soundCtx.currentTime); // dB
 compressor.knee.setValueAtTime(10, soundCtx.currentTime); // dB
-compressor.ratio.setValueAtTime(6, soundCtx.currentTime); // ratio
-compressor.attack.setValueAtTime(0.05, soundCtx.currentTime); // sec
+compressor.ratio.setValueAtTime(10, soundCtx.currentTime); // ratio
+compressor.attack.setValueAtTime(0.2, soundCtx.currentTime); // sec
 compressor.release.setValueAtTime(0.25, soundCtx.currentTime);
 //--------------------------MASTER GAIN-----------------------
-let masterGain = soundCtx.createGain();
-masterGain.gain.value = 0.7;
+const masterGain = soundCtx.createGain();
+masterGain.gain.value = 0.5;
 //--------------------------ROUTING---------------------------
 
-source.connect(compressor);
 compressor.connect(masterGain);
 masterGain.connect(soundCtx.destination);
-
 //--------------------------HTML CONNECT----------------------
 
 document.getElementById("start").addEventListener("click", loadPlayAudio);
-
 document.getElementById("stop").addEventListener("click", stopAudio);
