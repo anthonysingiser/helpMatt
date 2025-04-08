@@ -9,7 +9,7 @@ const loadPlayAudio = async function () {
   const audioBuffer = await soundCtx.decodeAudioData(arrayBuffer);
   source = soundCtx.createBufferSource();
   source.buffer = audioBuffer;
-  source.connect(compressor);
+  source.connect(inputGain);
   source.start();
 };
 
@@ -42,16 +42,23 @@ function makeDistortionCurve(amount) {
 
 dist.curve = makeDistortionCurve(25); //amount
 dist.oversample = "4x";
-
+//--------------------------INPUT GAIN------------------------
+let inputGain = soundCtx.createGain();
+inputGain.gain.value = 0.5;
 //--------------------------MASTER GAIN-----------------------
-const masterGain = soundCtx.createGain();
-masterGain.gain.value = 0.5;
+let outputGain = soundCtx.createGain();
+outputGain.gain.value = 0.5;
 //--------------------------ROUTING---------------------------
-
+inputGain.connect(compressor);
 compressor.connect(dist);
-dist.connect(masterGain);
-masterGain.connect(soundCtx.destination);
-//--------------------------HTML CONNECT----------------------
+dist.connect(outputGain);
+outputGain.connect(soundCtx.destination);
+//--------------------------GET HTML----------------------
 
-document.getElementById("start").addEventListener("click", loadPlayAudio);
-document.getElementById("stop").addEventListener("click", stopAudio);
+let startButton = document.getElementById("start");
+let stopButton = document.getElementById("stop");
+let inputFader = document.getElementById("input");
+
+//-------------------------EVENT LISTENERS----------------
+startButton.addEventListener("click", loadPlayAudio);
+stopButton.addEventListener("click", stopAudio);
