@@ -1,7 +1,7 @@
 // Create the Audio Context — this is the main control center for all audio operations
 const soundCtx = new AudioContext();
 
-//------------------------AUDIO DECODING--------------------
+//------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
 let source;
 const loadPlayAudio = async function () {
   const file = await fetch("snare_01.wav");
@@ -12,18 +12,36 @@ const loadPlayAudio = async function () {
   source.connect(inputGain);
   source.start();
 };
-
 const stopAudio = function () {
   source.stop();
 };
-//---------------------------COMPRESSOR VALUES--------------
+//---------------------------MORE FUNCTION EXPRESSIONS-------------
+const dBtoA = function (linAmp) {
+  return Math.pow(10, linAmp / 20);
+};
+// these arent really working and idk why
+const updateInputGain = function () {
+  let amp = dBtoA(inputFader.value);
+  inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
+  inputFaderLabel.innerText = `${inputFader.value} dBFS`;
+};
+const updateOutputGain = function () {
+  let amp = dBtoA(outputFader.value);
+  outputGain.gain.exponentialRampToValueAtTime(
+    amp,
+    soundCtx.currentTime + 0.01
+  );
+  outputFaderLabel.innerText = `${outputFader.value} dBFS`;
+};
+//---------------------------COMPRESSOR VALUES--------------------
 let compressor = soundCtx.createDynamicsCompressor();
 compressor.threshold.setValueAtTime(-25, soundCtx.currentTime); // dB
 compressor.knee.setValueAtTime(10, soundCtx.currentTime); // dB
 compressor.ratio.setValueAtTime(10, soundCtx.currentTime); // ratio
 compressor.attack.setValueAtTime(0.2, soundCtx.currentTime); // sec
 compressor.release.setValueAtTime(0.25, soundCtx.currentTime);
-//---------------------------OVERDRIVE VALUES-----------------
+//---------------------------OVERDRIVE VALUES--------------------
+
 // Distortion curve for the waveshaper, thanks to Kevin Ennis
 // http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion
 let dist = soundCtx.createWaveShaper();
@@ -42,23 +60,25 @@ function makeDistortionCurve(amount) {
 
 dist.curve = makeDistortionCurve(25); //amount
 dist.oversample = "4x";
-//--------------------------INPUT GAIN------------------------
+//--------------------------INPUT GAIN----------------------------
 let inputGain = soundCtx.createGain();
 inputGain.gain.value = 0.5;
-//--------------------------MASTER GAIN-----------------------
+//--------------------------MASTER GAIN---------------------------
 let outputGain = soundCtx.createGain();
 outputGain.gain.value = 0.5;
-//--------------------------ROUTING---------------------------
+//--------------------------ROUTING-------------------------------
 inputGain.connect(compressor);
 compressor.connect(dist);
 dist.connect(outputGain);
 outputGain.connect(soundCtx.destination);
-//--------------------------GET HTML----------------------
+//--------------------------GET HTML------------------------------
 
 let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
 let inputFader = document.getElementById("input");
-
-//-------------------------EVENT LISTENERS----------------
+let outputFader = document.getElementById("output");
+//-------------------------EVENT LISTENERS--------------------------
 startButton.addEventListener("click", loadPlayAudio);
 stopButton.addEventListener("click", stopAudio);
+inputFader.getElementById("input", updateInputGain);
+outputFader.getElementById("output", updateOutputGain);
