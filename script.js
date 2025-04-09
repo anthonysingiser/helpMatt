@@ -1,6 +1,6 @@
-// Create the Audio Context — this is the main control center for all audio operations
+// ----------------------VARIABLE DECLARATION---------------------------
 const soundCtx = new AudioContext();
-
+let time = 0.5; //ms
 //------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
 let source;
 const loadPlayAudio = async function () {
@@ -19,7 +19,7 @@ const stopAudio = function () {
 const dBtoA = function (linAmp) {
   return Math.pow(10, linAmp / 20);
 };
-// these arent really working and idk why
+
 const updateInputGain = function () {
   let amp = dBtoA(inputFader.value);
   inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
@@ -32,6 +32,14 @@ const updateOutputGain = function () {
     soundCtx.currentTime + 0.01
   );
   outputFaderLabel.innerText = `${outputFader.value} dBFS`;
+};
+const updateAttack = function () {
+  time = attackFader.value;
+  attackLabel.innerText = `${attackFader.value} ms`;
+};
+const updateRelease = function () {
+  time = releaseFader.value;
+  releaseLabel.innerText = `${releaseFader.value} ms`;
 };
 //---------------------------COMPRESSOR VALUES--------------------
 let compressor = soundCtx.createDynamicsCompressor();
@@ -77,8 +85,12 @@ let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
 let inputFader = document.getElementById("input");
 let outputFader = document.getElementById("output");
+let attackFader = document.getElementById("attack");
+let releaseFader = document.getElementbyId("release");
 //-------------------------EVENT LISTENERS--------------------------
 startButton.addEventListener("click", loadPlayAudio);
 stopButton.addEventListener("click", stopAudio);
-inputFader.getElementById("input", updateInputGain);
-outputFader.getElementById("output", updateOutputGain);
+inputFader.addEventListener("input", updateInputGain);
+outputFader.addEventListener("input", updateOutputGain);
+attackFader.addEventListener("input", updateAttack);
+releaseFader.addEventListener("input", updateRelease);
