@@ -4,7 +4,7 @@ let time = 0.5; //ms
 //------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
 let source;
 const loadPlayAudio = async function () {
-  const file = await fetch("snare_01.wav");
+  const file = await fetch("bass_16.wav");
   const arrayBuffer = await file.arrayBuffer();
   const audioBuffer = await soundCtx.decodeAudioData(arrayBuffer);
   source = soundCtx.createBufferSource();
@@ -19,7 +19,6 @@ const stopAudio = function () {
 const dBtoA = function (linAmp) {
   return Math.pow(10, linAmp / 20);
 };
-
 const updateInputGain = function () {
   let amp = dBtoA(inputFader.value);
   inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
@@ -47,7 +46,7 @@ compressor.threshold.setValueAtTime(-25, soundCtx.currentTime); // dB
 compressor.knee.setValueAtTime(10, soundCtx.currentTime); // dB
 compressor.ratio.setValueAtTime(10, soundCtx.currentTime); // ratio
 compressor.attack.setValueAtTime(0.2, soundCtx.currentTime); // sec
-compressor.release.setValueAtTime(0.25, soundCtx.currentTime);
+compressor.release.setValueAtTime(0.25, soundCtx.currentTime); // sec
 //---------------------------OVERDRIVE VALUES--------------------
 
 // Distortion curve for the waveshaper, thanks to Kevin Ennis
