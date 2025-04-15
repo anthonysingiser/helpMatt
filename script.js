@@ -22,7 +22,7 @@ const dBtoA = function (linAmp) {
 const updateInputGain = function () {
   let amp = dBtoA(inputFader.value);
   inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
-  inputFaderLabel.innerText = `${inputFader.value} dBFS`;
+  inputLabel.innerText = `${inputFader.value} `;
 };
 const updateOutputGain = function () {
   let amp = dBtoA(outputFader.value);
@@ -30,15 +30,22 @@ const updateOutputGain = function () {
     amp,
     soundCtx.currentTime + 0.01
   );
-  outputFaderLabel.innerText = `${outputFader.value} dBFS`;
+  outputLabel.innerText = `${outputFader.value} `;
 };
 const updateAttack = function () {
-  time = attackFader.value;
-  attackLabel.innerText = `${attackFader.value} ms`;
+  attackLabel.innerText = `${attackFader.value} `;
+  compressor.attack.linearRampToValueAtTime(
+    attackFader.value / 100,
+    soundCtx.currentTime + 0.2
+  );
 };
+
 const updateRelease = function () {
-  time = releaseFader.value;
-  releaseLabel.innerText = `${releaseFader.value} ms`;
+  releaseLabel.innerText = `${releaseFader.value} `;
+  compressor.release.linearRampToValueAtTime(
+    releaseFader.value / 100,
+    soundCtx.currentTime + 0.2
+  );
 };
 //---------------------------COMPRESSOR VALUES--------------------
 let compressor = soundCtx.createDynamicsCompressor();
@@ -82,10 +89,14 @@ outputGain.connect(soundCtx.destination);
 
 let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
-let inputFader = document.getElementById("input");
-let outputFader = document.getElementById("output");
-let attackFader = document.getElementById("attack");
-let releaseFader = document.getElementbyId("release");
+let inputFader = document.getElementById("inputLevel");
+let outputFader = document.getElementById("outputLevel");
+let attackFader = document.getElementById("attackTime");
+let releaseFader = document.getElementById("releaseTime");
+let inputLabel = document.getElementById("inputLabel");
+let outputLabel = document.getElementById("outputLabel");
+let attackLabel = document.getElementById("attackLabel");
+let releaseLabel = document.getElementById("releaseLabel");
 //-------------------------EVENT LISTENERS--------------------------
 startButton.addEventListener("click", loadPlayAudio);
 stopButton.addEventListener("click", stopAudio);
