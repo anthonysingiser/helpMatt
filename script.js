@@ -1,29 +1,56 @@
 // ----------------------VARIABLE DECLARATION---------------------------
 const soundCtx = new AudioContext();
-let time = 0.5; //ms
+
 //------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
 let source;
-const loadPlayAudio = async function () {
-  const file = await fetch("bass_16.wav");
-  const arrayBuffer = await file.arrayBuffer();
-  const audioBuffer = await soundCtx.decodeAudioData(arrayBuffer);
-  source = soundCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(inputGain);
-  source.start();
+let audioBuffer;
+//const loadPlayAudio = async function () {
+//const file = await fetch("bass_16.wav");
+//const arrayBuffer = await file.arrayBuffer();
+//const audioBuffer = await soundCtx.decodeAudioData(arrayBuffer);
+//source = soundCtx.createBufferSource();
+//source.buffer = audioBuffer;
+//source.connect(inputGain);
+//source.start();
+//};
+document.getElementById("file").addEventListener("change", async (event) => {
+  let file = event.target.files[0];
+  let arraybuf = await file.arrayBuffer();
+  audioBuffer = await soundCtx.decodeAudioData(arraybuf);
+});
+
+//let source = soundCtx.createBufferSource();
+//source.buffer = audiobuffer;
+//source.connect(inputGain);
+//source.start();
+//});
+const playAudio = () => {
+  if (audioBuffer) {
+    let source = soundCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(inputGain);
+    source.start();
+  }
 };
 const stopAudio = function () {
   source.stop();
 };
+
 //---------------------------MORE FUNCTION EXPRESSIONS-------------
 const dBtoA = function (linAmp) {
   return Math.pow(10, linAmp / 20);
 };
+
 const updateInputGain = function () {
-  let amp = dBtoA(inputFader.value);
+  let amp = dBtoA(inputFader.value * 0.5);
   inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
   inputLabel.innerText = `${inputFader.value} `;
 };
+//const updateInputGain = function () {
+//let input = inputFader.value / 10;
+//inputGain.gain.exponentialRampToValueAtTime(amp, soundCtx.currentTime + 0.01);
+//inputLabel.innerText = "${inputFader.value}";
+//};
 const updateOutputGain = function () {
   let amp = dBtoA(outputFader.value);
   outputGain.gain.exponentialRampToValueAtTime(
@@ -47,11 +74,12 @@ const updateRelease = function () {
     soundCtx.currentTime + 0.2
   );
 };
+
 //---------------------------COMPRESSOR VALUES--------------------
 let compressor = soundCtx.createDynamicsCompressor();
-compressor.threshold.setValueAtTime(-25, soundCtx.currentTime); // dB
+compressor.threshold.setValueAtTime(-50, soundCtx.currentTime); // dB
 compressor.knee.setValueAtTime(10, soundCtx.currentTime); // dB
-compressor.ratio.setValueAtTime(10, soundCtx.currentTime); // ratio
+compressor.ratio.setValueAtTime(20, soundCtx.currentTime); // ratio
 compressor.attack.setValueAtTime(0.2, soundCtx.currentTime); // sec
 compressor.release.setValueAtTime(0.25, soundCtx.currentTime); // sec
 //---------------------------OVERDRIVE VALUES--------------------
@@ -72,7 +100,7 @@ function makeDistortionCurve(amount) {
   return curve;
 }
 
-dist.curve = makeDistortionCurve(25); //amount
+dist.curve = makeDistortionCurve(10); //amount
 dist.oversample = "4x";
 //--------------------------INPUT GAIN----------------------------
 let inputGain = soundCtx.createGain();
@@ -97,8 +125,9 @@ let inputLabel = document.getElementById("inputLabel");
 let outputLabel = document.getElementById("outputLabel");
 let attackLabel = document.getElementById("attackLabel");
 let releaseLabel = document.getElementById("releaseLabel");
+
 //-------------------------EVENT LISTENERS--------------------------
-startButton.addEventListener("click", loadPlayAudio);
+startButton.addEventListener("click", playAudio);
 stopButton.addEventListener("click", stopAudio);
 inputFader.addEventListener("input", updateInputGain);
 outputFader.addEventListener("input", updateOutputGain);
