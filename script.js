@@ -2,7 +2,7 @@
 const soundCtx = new AudioContext();
 
 //------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
-let source = soundCtx.createBufferSource();//declare source globally
+let source = null;//declare source globally
 let audioBuffer;
 //const loadPlayAudio = async function () {
 //const file = await fetch("bass_16.wav");
@@ -26,13 +26,22 @@ document.getElementById("file").addEventListener("change", async (event) => {
 //});
 const playAudio = () => {
   if (audioBuffer) {
+    if (source) {
+      source.stop(); //stop any existing playback
+      source = null; //reset source to null
+    }
+    source = soundCtx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(inputGain);
     source.start();
   }
 };
 const stopAudio = function () {
-  source.stop();
+  if (source){
+    source.stop();
+    source.disconnect();// Disconnect the source from the audio graph
+    source = null; //reset source to null
+  }
 };
 
 //---------------------------MORE FUNCTION EXPRESSIONS-------------
