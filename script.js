@@ -141,3 +141,22 @@ inputFader.addEventListener("input", updateInputGain);
 outputFader.addEventListener("input", updateOutputGain);
 attackFader.addEventListener("input", updateAttack);
 releaseFader.addEventListener("input", updateRelease);
+
+//-------------------------INITIALIZE------------------------------
+// Reset faders and file input on page load
+document.addEventListener("DOMContentLoaded", () => {
+  // Reset faders to default values
+  inputFader.value = 5;
+  outputFader.value = 5;
+  attackFader.value = 5;
+  releaseFader.value = 5;
+
+  // Update labels to match default values
+  inputLabel.innerText = inputFader.value;
+  outputLabel.innerText = outputFader.value;
+  attackLabel.innerText = attackFader.value;
+  releaseLabel.innerText = releaseFader.value;
+
+  // Reset file input
+  document.getElementById("file").value = "";
+});
