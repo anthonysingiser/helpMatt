@@ -2,7 +2,7 @@
 const soundCtx = new AudioContext();
 
 //------------------------AUDIO DECODING & STOP/START FUNCTION--------------------
-let source;
+let source = soundCtx.createBufferSource();//declare source globally
 let audioBuffer;
 //const loadPlayAudio = async function () {
 //const file = await fetch("bass_16.wav");
@@ -26,7 +26,6 @@ document.getElementById("file").addEventListener("change", async (event) => {
 //});
 const playAudio = () => {
   if (audioBuffer) {
-    let source = soundCtx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(inputGain);
     source.start();
